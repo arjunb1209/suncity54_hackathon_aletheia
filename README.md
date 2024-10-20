@@ -1,7 +1,5 @@
 # suncity54_hackathon_aletheia
 
-Here's the updated README.md:
-
 Aletheia - AI-powered Misinformation Detection Browser Extension
 Aletheia is an AI-driven browser extension designed to detect misinformation and predict the authenticity of news articles in real-time. Powered by a custom machine learning model, Aletheia brings seamless prediction capabilities into your browser with an intuitive, easy-to-use interface.
 
