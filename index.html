@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Prediction</title>
+    <style>
+        body {
+            font-family: Optima, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-family: Optima, serif;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            font-family: Optima;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #2850a7;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #1b1b6e;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border: 1px solid #b8daff;
+            border-radius: 4px;
+        }
+
+        /* Rating stars */
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .star {
+            font-size: 30px;
+            color: #ddd;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .star:hover {
+            color: gold;
+        }
+        .star.selected {
+            color: gold;
+        }
+        #rating-result {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aletheia</h1>
+        <h2>The unyielding pursuit of truth</h2>
+        <input type="text" id="newsInput" placeholder="Enter news text">
+        <button id="predict-button">Predict</button>  <!-- Make sure button has an ID -->
+        
+        <div id="result">
+            <h2>Prediction:</h2>
+            <p id="prediction-result">Your prediction will appear here...</p>
+        </div>
+
+        <!-- Rating System -->
+        <div class="star-rating">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <button id="submit-rating">Submit Rating</button>
+        <div id="rating-result"></div>
+    </div>
+
+    <!-- Add JavaScript for prediction and rating -->
+    <script>
+        // Prediction functionality
+        document.getElementById('predict-button').addEventListener('click', getPrediction);
+
+        async function getPrediction() {
+            const newsText = document.getElementById('newsInput').value;
+
+            if (!newsText) {
+                document.getElementById('prediction-result').innerText = 'Please enter news text';
+                return;  // Early return if input is empty
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ news_text: newsText })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+
+                const data = await response.json();
+
+                // Update the result in the HTML
+                document.getElementById('prediction-result').innerText = data.prediction || 'Error';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('prediction-result').innerText = 'Error: ' + error.message;
+            }
+        }
+
+        // Rating functionality
+        const stars = document.querySelectorAll('.star');
+        let selectedRating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-value'));
+
+                // Reset all stars to their default state
+                stars.forEach(s => s.classList.remove('selected'));
+
+                // Apply 'selected' class to all stars up to the clicked one
+                for (let i = 0; i < selectedRating; i++) {
+                    stars[i].classList.add('selected');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
